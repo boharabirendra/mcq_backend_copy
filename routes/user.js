@@ -51,7 +51,7 @@ router.post("/signin", userMiddleware, (req, res) => {
 
         res
             .status(200)
-            .cookie("accessToken", accessToken)
+            .cookie("accessToken", accessToken, {httpOnly: true, secure: true, sameSite:"none"})
             .json({
                 message: "login successfully",
                 accessToken,
