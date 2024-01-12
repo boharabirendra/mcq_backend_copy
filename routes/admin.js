@@ -39,7 +39,8 @@ router.post("/signin", adminMiddleware, (req, res) => {
 
         const options = {
             httpOnly: true,
-            secure: true
+            secure: true,
+            sameSite: "none"
         }
         res.status(200)
             .cookie("accessToken", adminAccessToken, options)
