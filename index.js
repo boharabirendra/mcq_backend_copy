@@ -13,11 +13,12 @@ const app = express()
 dotenv.config({
     path: "./.env"
 })
+const corsOptions = {
+    origin: 'https://mcq-test-sys.netlify.app',
+    credentials: true,  // This enables the credentials (cookies, headers) to be included in the CORS request
+  };
 
-app.use(cors({
-    origin: "https://mcq-test-sys.netlify.app/",
-    credentials: true
-}))
+app.use(cors(corsOptions))
 app.use(bodyParser.json())
 app.use(cookieParser())
 
