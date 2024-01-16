@@ -1,7 +1,7 @@
 const { Router } = require("express")
 const User = require("../model/user.model")
 const { userSignup } = require("../types")
-const { userExists, userMiddleware } = require("../middlewares/user.middlewares")
+const { userExists, userMiddleware, doesUserSignedIn } = require("../middlewares/user.middlewares")
 const jwt = require("jsonwebtoken")
 
 
@@ -65,19 +65,10 @@ router.post("/signin", userMiddleware, (req, res) => {
 })
 
 
-router.get("/1", (req, res) => {
-    // const accessToken = req.cookies?.accessToken
-    // if (!accessToken) {
-    //     res.status(403)
-    //         .json({
-    //             message: "Unauthorized access"
-    //         })
-    //     return;
-    // }
-    // const decoded = jwt.verify(accessToken, process.env.JWT_SECRET)
-    // const username = decoded.username
+router.get("/1", doesUserSignedIn, (req, res) => {
+    const username = req.username
     User.findOne({
-        username: "Jdjd"
+        username,
     })
         .then(user => {
             res.status(200)
