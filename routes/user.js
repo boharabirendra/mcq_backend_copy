@@ -48,9 +48,8 @@ router.post("/signin", userMiddleware, (req, res) => {
         const accessToken = jwt.sign({
             username,
         }, process.env.JWT_SECRET)
-
-        res
-            .status(200)
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private')
+        res.status(200)
             .cookie("accessToken", accessToken, { httpOnly: true, secure: true, sameSite: "none" })
             .json({
                 message: "login successfully",
@@ -84,7 +83,8 @@ router.get("/1", doesUserSignedIn, (req, res) => {
         })
 })
 
-router.post("/logout", (req, res) => {
+router.post("/logout", doesUserSignedIn, (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private')
     res.clearCookie("accessToken")
     res.status(200).json({
         message: "Logout successfully"
