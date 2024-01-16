@@ -84,7 +84,7 @@ router.get("/1", doesUserSignedIn, (req, res) => {
         })
 })
 
-router.post("/logout", doesUserSignedIn, (req, res) => {
+router.post("/logout", (req, res) => {
     res.clearCookie("accessToken")
     res.status(200).json({
         message: "Logout successfully"
