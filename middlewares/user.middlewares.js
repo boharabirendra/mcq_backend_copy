@@ -42,7 +42,9 @@ async function userMiddleware(req, res, next) {
 function doesUserSignedIn(req, res, next){
     try {
       const accessToken = req.cookies?.accessToken
-      if(!accessToken) return res.redirect("/")
+      if(!accessToken){
+        return res.redirect("/")
+      }
       const decoded = jwt.verify(accessToken, process.env.JWT_SECRET)
       req.username = decoded.username
       next()
