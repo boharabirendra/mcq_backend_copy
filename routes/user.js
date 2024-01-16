@@ -51,7 +51,7 @@ router.post("/signin", userMiddleware, (req, res) => {
 
         res
             .status(200)
-            .cookie("accessToken", accessToken, {httpOnly: true, secure: true, sameSite:"none"})
+            .cookie("accessToken", accessToken, { httpOnly: true, secure: true, sameSite: "none" })
             .json({
                 message: "login successfully",
                 accessToken,
@@ -65,5 +65,32 @@ router.post("/signin", userMiddleware, (req, res) => {
 })
 
 
+router.get("/1", (req, res) => {
+    // const accessToken = req.cookies?.accessToken
+    // if (!accessToken) {
+    //     res.status(403)
+    //         .json({
+    //             message: "Unauthorized access"
+    //         })
+    //     return;
+    // }
+    // const decoded = jwt.verify(accessToken, process.env.JWT_SECRET)
+    // const username = decoded.username
+    User.findOne({
+        username: "Jdjd"
+    })
+        .then(user => {
+            res.status(200)
+                .json({
+                    user,
+                })
+        })
+        .catch(error => {
+            res.status(500)
+                .json({
+                    error,
+                })
+        })
+})
 
 module.exports = router
