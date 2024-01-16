@@ -67,6 +67,7 @@ router.post("/signin", userMiddleware, (req, res) => {
 
 router.get("/1", doesUserSignedIn, (req, res) => {
     const username = req.username
+    console.log(username)
     User.findOne({
         username,
     })
