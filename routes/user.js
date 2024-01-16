@@ -85,7 +85,7 @@ router.get("/1", doesUserSignedIn, (req, res) => {
 
 router.post("/logout", doesUserSignedIn, (req, res) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private')
-    res.clearCookie("accessToken")
+    res.clearCookie("accessToken", {sameSite: "none", secure: true, httpOnly: true})
     res.status(200).json({
         message: "Logout successfully"
     })
