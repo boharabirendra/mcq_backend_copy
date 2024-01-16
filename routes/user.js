@@ -67,7 +67,6 @@ router.post("/signin", userMiddleware, (req, res) => {
 
 router.get("/1", doesUserSignedIn, (req, res) => {
     const username = req.username
-    console.log(username)
     User.findOne({
         username,
     })
@@ -84,5 +83,14 @@ router.get("/1", doesUserSignedIn, (req, res) => {
                 })
         })
 })
+
+router.post("/logout", doesUserSignedIn, (req, res) => {
+    res.clearCookie("accessToken")
+    res.status(200).json({
+        message: "Logout successfully"
+    })
+})
+
+
 
 module.exports = router
