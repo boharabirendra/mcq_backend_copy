@@ -7,7 +7,6 @@ const userRouter = require("./routes/user.js")
 const questionRouter = require("./routes/questions.js")
 const dbConnection = require("./db/index.js")
 const cookieParser = require("cookie-parser")
-const { Introduction_to_C } = require("./model/questions.model.js")
 const app = express()
 
 dotenv.config({
@@ -22,6 +21,7 @@ const corsOptions = {
 app.use(cors(corsOptions))
 app.use(bodyParser.json())
 app.use(cookieParser())
+app.use(express.urlencoded({ extended: false }))
 
 app.use("/admin", adminRouter)
 app.use("/user", userRouter)

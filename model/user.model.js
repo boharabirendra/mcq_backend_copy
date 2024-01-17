@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 
 const userSchema = new mongoose.Schema({
-    fullName:String,
+    fullName: String,
     username: {
         type: String,
         unique: true
@@ -9,15 +9,18 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
     },
-    grade:{
+    grade: {
         type: String,
     },
-    gender:{
+    gender: {
         type: String,
         enum: ["Male", "Female", "Other"]
     },
-    testStat:[{
-        score:{
+    studImage: {
+        type: String
+    },
+    testStat: [{
+        score: {
             type: Number,
         },
         testStartsTime: {

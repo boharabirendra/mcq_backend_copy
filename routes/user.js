@@ -3,13 +3,14 @@ const User = require("../model/user.model")
 const { userSignup } = require("../types")
 const { userExists, userMiddleware, doesUserSignedIn } = require("../middlewares/user.middlewares")
 const jwt = require("jsonwebtoken")
+const { upload } = require("../middlewares/multer.middlewares")
+const { uploadOnCloudinary } = require("../middlewares/cloudinary.middlewares")
 
 
 const router = Router()
 
 
-router.post("/signup", userExists, function (req, res) {
-
+router.post("/signup", userExists, upload.single("studImage"), async function (req, res) {
     const userPayLoad = req.body
     const parsedPayLoad = userSignup.safeParse(userPayLoad)
     if (!parsedPayLoad.success) {
@@ -18,6 +19,13 @@ router.post("/signup", userExists, function (req, res) {
         })
         return;
     }
+    let studImage = ""
+    if (req.file.path) {
+        const cloudinaryResponse = await uploadOnCloudinary(req.file.path) 
+        studImage = cloudinaryResponse?.url
+
+    }
+
     const fullName = userPayLoad.fullName
     const username = userPayLoad.username
     const password = userPayLoad.password
@@ -29,6 +37,7 @@ router.post("/signup", userExists, function (req, res) {
         password,
         grade,
         gender,
+        studImage,
     })
         .then(function () {
             res.status(200).json({
@@ -85,7 +94,7 @@ router.get("/1", doesUserSignedIn, (req, res) => {
 
 router.post("/logout", doesUserSignedIn, (req, res) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private')
-    res.clearCookie("accessToken", {sameSite: "none", secure: true, httpOnly: true})
+    res.clearCookie("accessToken", { sameSite: "none", secure: true, httpOnly: true })
     res.status(200).json({
         message: "Logout successfully"
     })
