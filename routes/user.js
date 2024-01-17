@@ -12,7 +12,6 @@ const router = Router()
 
 router.post("/signup", userExists, upload.single("studImage"), async function (req, res) {
     const userPayLoad = req.body
-    console.log(req.file)
     const parsedPayLoad = userSignup.safeParse(userPayLoad)
     if (!parsedPayLoad.success) {
         res.status(411).json({
