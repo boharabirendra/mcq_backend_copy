@@ -12,6 +12,7 @@ const router = Router()
 
 router.post("/signup", userExists, upload.single("studImage"), async function (req, res) {
     const userPayLoad = req.body
+    console.log(req.file)
     const parsedPayLoad = userSignup.safeParse(userPayLoad)
     if (!parsedPayLoad.success) {
         res.status(411).json({
@@ -20,10 +21,18 @@ router.post("/signup", userExists, upload.single("studImage"), async function (r
         return;
     }
     let studImage = ""
-    if (req.file.path) {
-        const cloudinaryResponse = await uploadOnCloudinary(req.file.path) 
-        studImage = cloudinaryResponse?.url
-
+    if (req.file) {
+        try {
+            const result = await uploadOnCloudinary(req.file.buffer);
+            // Handle the result
+            studImage = result.secure_url
+        } catch (error) {
+            // Handle the error
+            res.status(500).json({
+                message: 'File upload not successful',
+                error,
+            });
+        }
     }
 
     const fullName = userPayLoad.fullName
