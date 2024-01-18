@@ -16,19 +16,10 @@ router.post("/selected/topics", (req, res) => {
   })
 })
 
-router.get("/all/:noOfQns", doesUserSignedIn, async (req, res) => {
-  /*
-  a: "Computer basics", computer_basics
-  b: "Number system", number_systems
-  c: "Qbasic basics", qbasic_basics
-  d: "Modular programming & Array in Qbasic", modular_programming
-  e: "File handling", file_handling
-  f: "Introduction to C programming", intro_to_c
-  */
 
+function returnSelectedTopics(selectedTopics) {
   const collectionFromWhereQuestionHaveToFetch = []
-
-  topics.forEach(topic => {
+  selectedTopics.forEach(topic => {
     if (topic === "Computer basics") {
       collectionFromWhereQuestionHaveToFetch.push(ComputerBasics)
     } else if (topic === "Number system") {
@@ -43,6 +34,21 @@ router.get("/all/:noOfQns", doesUserSignedIn, async (req, res) => {
       collectionFromWhereQuestionHaveToFetch.push(Introduction_to_C)
     }
   })
+  return collectionFromWhereQuestionHaveToFetch;
+}
+
+
+router.get("/all/:noOfQns", doesUserSignedIn, async (req, res) => {
+  /*
+  a: "Computer basics", computer_basics
+  b: "Number system", number_systems
+  c: "Qbasic basics", qbasic_basics
+  d: "Modular programming & Array in Qbasic", modular_programming
+  e: "File handling", file_handling
+  f: "Introduction to C programming", intro_to_c
+  */
+
+  const collectionFromWhereQuestionHaveToFetch = returnSelectedTopics(topics)
 
 
   let questions = []
@@ -102,39 +108,54 @@ router.get("/all/:noOfQns", doesUserSignedIn, async (req, res) => {
 
 
 router.post("/submittedAns", doesUserSignedIn, async (req, res) => {
-  let obtainedScore = 0
-  const username = req.username
-  const submittedAns = req.body.selectedAnswers
-  const questionId = Object.keys(submittedAns)
-  const selectedAns = Object.values(submittedAns)
-  const correctAns = await Question.find({
-    _id: {
-      "$in": questionId
+  let obtainedScore = 0;
+  let correctAns = [];
+  const username = req.username;
+  const submittedAns = req.body.selectedAnswers;
+  const selectedTopics = req.body.selectedTopics;
+  const questionId = Object.keys(submittedAns);
+  const selectedAns = Object.values(submittedAns);
+
+  const modelsFromWhichNeedToExtractCorrectAns = returnSelectedTopics(selectedTopics);
+
+  try {
+    for (const model of modelsFromWhichNeedToExtractCorrectAns) {
+      const corrAns = await model.find({
+        _id: {
+          "$in": questionId
+        }
+      }, "ans");
+
+      correctAns = [...correctAns, ...corrAns];
     }
-  }, "ans")
-
-  correctAns.forEach(corrAns => {
-    if (selectedAns.find(userAns => userAns === corrAns.ans)) {
-      obtainedScore++
-    }
-  });
-
-
-  await User.updateOne({
-    username,
-  }, {
-    "$push": {
-      testStat: {
-        score: obtainedScore,
-        testStartsTime: req.body.testStartsTime,
-        testEndsTime: req.body.testEndsTime
+    correctAns.forEach((corrAns) => {
+      if (selectedAns.find((userAns) => userAns === corrAns.ans)) {
+        obtainedScore++;
       }
-    }
-  })
-  res.json({
-    message: "Submitted successfully"
-  })
-})
+    });
+
+    await User.updateOne({
+      username,
+    }, {
+      $push: {
+        testStat: {
+          score: obtainedScore,
+          testStartsTime: req.body.testStartsTime,
+          testEndsTime: req.body.testEndsTime,
+        },
+      },
+    });
+
+    res.json({
+      message: "Submitted successfully",
+    });
+  } catch (error) {
+    console.error("Error in processing submittedAns:", error);
+    res.status(500).json({
+      error: "Internal server error",
+    });
+  }
+});
 
 
 module.exports = router
