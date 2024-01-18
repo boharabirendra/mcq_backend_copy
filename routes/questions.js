@@ -80,7 +80,7 @@ router.get("/all/:noOfQns", doesUserSignedIn, async (req, res) => {
       firstSetOfQns = await collectionFromWhereQuestionHaveToFetch[0].aggregate([{ $sample: { size: 7 } }]);
       secondSetOfQns = await collectionFromWhereQuestionHaveToFetch[1].aggregate([{ $sample: { size: 8 } }]);
       thirdSetOfQns = await collectionFromWhereQuestionHaveToFetch[2].aggregate([{ $sample: { size: 7 } }]);
-      fourthSetOfQns = await collectionFromWhereQuestionHaveToFetch[3].aggregate([{ $sample: { size: 7 } }]);
+      fourthSetOfQns = await collectionFromWhereQuestionHaveToFetch[3].aggregate([{ $sample: { size: 8 } }]);
       questions = [...fifthSetOfQns, ...secondSetOfQns, ...thirdSetOfQns, ...fourthSetOfQns]
       break;
     case 5:
@@ -113,8 +113,6 @@ router.post("/submittedAns", doesUserSignedIn, async (req, res) => {
   const username = req.username;
   const submittedAns = req.body.selectedAnswers;
   const selectedTopics = req.body.selectedTopics;
-  console.log(selectedTopics)
-  console.log(req.body.selectedTopics)
   const questionId = Object.keys(submittedAns);
   const selectedAns = Object.values(submittedAns);
 
