@@ -113,6 +113,8 @@ router.post("/submittedAns", doesUserSignedIn, async (req, res) => {
   const username = req.username;
   const submittedAns = req.body.selectedAnswers;
   const selectedTopics = req.body.selectedTopics;
+  console.log(selectedTopics)
+  console.log(req.body.selectedTopics)
   const questionId = Object.keys(submittedAns);
   const selectedAns = Object.values(submittedAns);
 
