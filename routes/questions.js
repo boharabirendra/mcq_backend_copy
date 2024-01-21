@@ -9,6 +9,31 @@ const router = Router()
 let topics;
 
 
+async function randomlyQuestionIdsGenerator(model, numberOfQuestions) {
+  const allQuestionIds = []
+  const randomlySelectedQuestionIds = []
+  const allQnsIds = await model.find({}, { projection: { _id: 1 } })
+  allQnsIds.forEach(id => {
+    allQuestionIds.push(id._id)
+  })
+  const lengthOfAllQuestionIds = allQuestionIds.length
+  for (let index = 0; index < numberOfQuestions; index++) {
+    const randomIndex = Math.floor(Math.random() * lengthOfAllQuestionIds) + 1;
+    randomlySelectedQuestionIds.push(allQuestionIds[randomIndex])
+  }
+  return randomlySelectedQuestionIds
+}
+
+
+async function randomlyQuestionsSelector(model, questionsIds) {
+  const questions = await model.find({
+    _id: {
+      "$in": questionsIds
+    }
+  }).select("-ans");
+  return questions
+}
+
 router.post("/selected/topics", (req, res) => {
   topics = req.body.selectedTopics
   res.status(200).json({
@@ -58,46 +83,69 @@ router.get("/all/:noOfQns", doesUserSignedIn, async (req, res) => {
   let fourthSetOfQns = []
   let fifthSetOfQns = []
   let sixthSetOfQns = []
-
+  let questionsIds = []
   const numberOfSeletedTopics = topics.length
   const simpleSize = parseInt(req.params.noOfQns)
   switch (numberOfSeletedTopics) {
     case 1:
-      questions = await collectionFromWhereQuestionHaveToFetch[0].aggregate([{ $sample: { size: simpleSize } }]);
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[0], Math.floor(simpleSize))
+      questions = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[0], questionsIds)
       break;
     case 2:
-      firstSetOfQns = await collectionFromWhereQuestionHaveToFetch[0].aggregate([{ $sample: { size: 15 } }]);
-      secondSetOfQns = await collectionFromWhereQuestionHaveToFetch[1].aggregate([{ $sample: { size: 15 } }]);
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[0], simpleSize / 2)
+      firstSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[0], questionsIds)
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[1], simpleSize / 2)
+      secondSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[1], questionsIds)
       questions = [...firstSetOfQns, ...secondSetOfQns]
       break;
     case 3:
-      firstSetOfQns = await collectionFromWhereQuestionHaveToFetch[0].aggregate([{ $sample: { size: 10 } }]);
-      secondSetOfQns = await collectionFromWhereQuestionHaveToFetch[1].aggregate([{ $sample: { size: 10 } }]);
-      thirdSetOfQns = await collectionFromWhereQuestionHaveToFetch[2].aggregate([{ $sample: { size: 10 } }]);
+
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[0], simpleSize / 3)
+      firstSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[0], questionsIds)
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[1], simpleSize / 3)
+      secondSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[1], questionsIds)
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[2], simpleSize / 3)
+      thirdSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[2], questionsIds)
       questions = [...fifthSetOfQns, ...secondSetOfQns, ...thirdSetOfQns]
       break;
     case 4:
-      firstSetOfQns = await collectionFromWhereQuestionHaveToFetch[0].aggregate([{ $sample: { size: 7 } }]);
-      secondSetOfQns = await collectionFromWhereQuestionHaveToFetch[1].aggregate([{ $sample: { size: 8 } }]);
-      thirdSetOfQns = await collectionFromWhereQuestionHaveToFetch[2].aggregate([{ $sample: { size: 7 } }]);
-      fourthSetOfQns = await collectionFromWhereQuestionHaveToFetch[3].aggregate([{ $sample: { size: 8 } }]);
+
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[0], simpleSize / 5 + 1)
+      firstSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[0], questionsIds)
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[1], simpleSize / 5 + 2)
+      secondSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[1], questionsIds)
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[2], simpleSize / 5 + 1)
+      thirdSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[2], questionsIds)
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[3], simpleSize / 5 + 2)
+      fourthSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[3], questionsIds)
       questions = [...fifthSetOfQns, ...secondSetOfQns, ...thirdSetOfQns, ...fourthSetOfQns]
       break;
     case 5:
-      firstSetOfQns = await collectionFromWhereQuestionHaveToFetch[0].aggregate([{ $sample: { size: 6 } }]);
-      secondSetOfQns = await collectionFromWhereQuestionHaveToFetch[1].aggregate([{ $sample: { size: 6 } }]);
-      thirdSetOfQns = await collectionFromWhereQuestionHaveToFetch[2].aggregate([{ $sample: { size: 6 } }]);
-      fourthSetOfQns = await collectionFromWhereQuestionHaveToFetch[3].aggregate([{ $sample: { size: 6 } }]);
-      fifthSetOfQns = await collectionFromWhereQuestionHaveToFetch[4].aggregate([{ $sample: { size: 6 } }]);
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[0], simpleSize / 5)
+      firstSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[0], questionsIds)
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[1], simpleSize / 5)
+      secondSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[1], questionsIds)
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[2], simpleSize / 5)
+      thirdSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[2], questionsIds)
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[3], simpleSize / 5)
+      fourthSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[3], questionsIds)
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[4], simpleSize / 5)
+      fifthSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[4], questionsIds)
       questions = [...fifthSetOfQns, ...secondSetOfQns, ...thirdSetOfQns, ...fourthSetOfQns, ...fifthSetOfQns]
       break;
     default:
-      firstSetOfQns = await collectionFromWhereQuestionHaveToFetch[0].aggregate([{ $sample: { size: 5 } }]);
-      secondSetOfQns = await collectionFromWhereQuestionHaveToFetch[1].aggregate([{ $sample: { size: 5 } }]);
-      thirdSetOfQns = await collectionFromWhereQuestionHaveToFetch[2].aggregate([{ $sample: { size: 5 } }]);
-      fourthSetOfQns = await collectionFromWhereQuestionHaveToFetch[3].aggregate([{ $sample: { size: 5 } }]);
-      fifthSetOfQns = await collectionFromWhereQuestionHaveToFetch[4].aggregate([{ $sample: { size: 5 } }]);
-      sixthSetOfQns = await collectionFromWhereQuestionHaveToFetch[5].aggregate([{ $sample: { size: 5 } }]);
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[0], simpleSize / 6)
+      firstSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[0], questionsIds)
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[1], simpleSize / 6)
+      secondSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[1], questionsIds)
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[2], simpleSize / 6)
+      thirdSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[2], questionsIds)
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[3], simpleSize / 6)
+      fourthSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[3], questionsIds)
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[4], simpleSize / 6)
+      fifthSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[4], questionsIds)
+      questionsIds = await randomlyQuestionIdsGenerator(collectionFromWhereQuestionHaveToFetch[5], simpleSize / 6)
+      sixthSetOfQns = await randomlyQuestionsSelector(collectionFromWhereQuestionHaveToFetch[5], questionsIds)
       questions = [...fifthSetOfQns, ...secondSetOfQns, ...thirdSetOfQns, ...fourthSetOfQns, ...fifthSetOfQns, ...sixthSetOfQns]
       break;
   }
