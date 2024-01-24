@@ -195,7 +195,7 @@ router.post("/submittedAns", doesUserSignedIn, async (req, res) => {
       },
     });
 
-    TestTaken.create({
+    await TestTaken.create({
       username,
       testSet: submittedAns
     })
