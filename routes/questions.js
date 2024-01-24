@@ -2,6 +2,7 @@ const { Router } = require("express")
 const { Question, ComputerBasics, NumberSystem, QbasicBasics, ModularProgramming, FileHandling, Introduction_to_C } = require("../model/questions.model")
 const User = require("../model/user.model.js")
 const { userMiddleware, doesUserSignedIn } = require("../middlewares/user.middlewares.js")
+const { TestTaken } = require("../model/taken_test.model.js")
 const router = Router()
 
 
@@ -193,6 +194,11 @@ router.post("/submittedAns", doesUserSignedIn, async (req, res) => {
         },
       },
     });
+
+    TestTaken.create({
+      username,
+      testSet: submittedAns
+    })
 
     res.json({
       message: "Submitted successfully",
