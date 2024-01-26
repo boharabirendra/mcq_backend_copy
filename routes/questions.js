@@ -257,10 +257,9 @@ router.get("/taken/test", doesUserSignedIn, async (req, res) => {
       }
     }).lean();
     questions.push(...computer_basics, ...number_systems, ...file_handling, ...modular_programming, ...intro_to_c, ...qbasic_basics)
-    console.log(questions)
     const questionsWithUsesSelectedAns = questions.map(question => {
       question["submittedAns"] = attemptedQnsAndAns[0][question._id]
-      return question
+      return question;
     })
 
     takenTestQns.push(questionsWithUsesSelectedAns)
