@@ -212,5 +212,64 @@ router.post("/submittedAns", doesUserSignedIn, async (req, res) => {
 });
 
 
+router.get("/taken/test", doesUserSignedIn, async (req, res) => {
+  const takenTestQns = []
+
+  const tests = await TestTaken.find({
+    username: req.username
+  })
+
+  const user = await User.findOne({
+    username: req.username
+  })
+  for (const test of tests) {
+    const questions = []
+    const attemptedQnsAndAns = test.testSet
+    const attemptedQnsIds = Object.keys(attemptedQnsAndAns[0])
+    const computer_basics = await ComputerBasics.find({
+      _id: {
+        "$in": attemptedQnsIds
+      }
+    }).lean();
+    const number_systems = await NumberSystem.find({
+      _id: {
+        "$in": attemptedQnsIds
+      }
+    }).lean();
+    const file_handling = await FileHandling.find({
+      _id: {
+        "$in": attemptedQnsIds
+      }
+    }).lean();
+    const modular_programming = await ModularProgramming.find({
+      _id: {
+        "$in": attemptedQnsIds
+      }
+    }).lean();
+    const qbasic_basics = await QbasicBasics.find({
+      _id: {
+        "$in": attemptedQnsIds
+      }
+    }).lean();
+    const intro_to_c = await Introduction_to_C.find({
+      _id: {
+        "$in": attemptedQnsIds
+      }
+    }).lean();
+    questions.push(...computer_basics, ...number_systems, ...file_handling, ...modular_programming, ...intro_to_c, ...qbasic_basics)
+    console.log(questions)
+    const questionsWithUsesSelectedAns = questions.map(question => {
+      question["submittedAns"] = attemptedQnsAndAns[0][question._id]
+      return question
+    })
+
+    takenTestQns.push(questionsWithUsesSelectedAns)
+  }
+  res.status(200).json({
+    takenTestQns,
+    testStat: user.testStat
+  })
+})
+
 module.exports = router
 
