@@ -20,7 +20,7 @@ async function adminExists(req, res, next) {
 
 function doesAdminSignedIn(req, res, next) {
     try {
-        const accessToken = req.cookies?.adminAccessToken
+        const accessToken = req.headers.authorization.split(" ")[1]
         if (!accessToken) {
             return res.redirect("/admin")
         }

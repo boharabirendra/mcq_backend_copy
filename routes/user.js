@@ -67,7 +67,6 @@ router.post("/signin", userMiddleware, (req, res) => {
         }, process.env.JWT_SECRET)
         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private')
         res.status(200)
-            .cookie("accessToken", accessToken, { httpOnly: true, secure: true, sameSite: "none" })
             .json({
                 message: "login successfully",
                 accessToken,

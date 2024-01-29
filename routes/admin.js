@@ -43,7 +43,6 @@ router.post("/signin", adminMiddleware, (req, res) => {
             sameSite: "none"
         }
         res.status(200)
-            .cookie("adminAccessToken", adminAccessToken, options)
             .json({
                 adminAccessToken,
             })

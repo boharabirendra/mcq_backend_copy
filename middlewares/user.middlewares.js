@@ -39,20 +39,20 @@ async function userMiddleware(req, res, next) {
 }
 
 
-function doesUserSignedIn(req, res, next){
-    try {
-      const accessToken = req.cookies?.accessToken
-      if(!accessToken){
-        return res.redirect("/")
-      }
-      const decoded = jwt.verify(accessToken, process.env.JWT_SECRET)
-      req.username = decoded.username
-      next()
-    } catch (error) {
-      res.json({
-        error,
-      })
+function doesUserSignedIn(req, res, next) {
+  try {
+    const accessToken = req.headers.authorization.split(" ")[1]
+    if (!accessToken) {
+      return res.redirect("/")
     }
+    const decoded = jwt.verify(accessToken, process.env.JWT_SECRET)
+    req.username = decoded.username
+    next()
+  } catch (error) {
+    res.json({
+      error,
+    })
+  }
 }
 
 module.exports = { userExists, userMiddleware, doesUserSignedIn }
