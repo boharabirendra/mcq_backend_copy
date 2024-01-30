@@ -27,7 +27,7 @@ function doesAdminSignedIn(req, res, next) {
         const decoded = jwt.verify(accessToken, process.env.JWT_SECRET)
         next()
     } catch (error) {
-        res.json({
+        res.status(401).json({
             error,
         })
     }

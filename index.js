@@ -13,8 +13,8 @@ dotenv.config({
     path: "./.env"
 })
 const corsOptions = {
-    // origin: "http://localhost:5173",
-    origin: 'https://mcq-test-sys.netlify.app',
+    origin: "http://localhost:5173",
+    // origin: 'https://mcq-test-sys.netlify.app',
     credentials: true,  // This enables the credentials (cookies, headers) to be included in the CORS request
 };
 

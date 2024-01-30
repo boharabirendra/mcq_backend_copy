@@ -49,7 +49,7 @@ function doesUserSignedIn(req, res, next) {
     req.username = decoded.username
     next()
   } catch (error) {
-    res.json({
+    res.status(401).json({
       error,
     })
   }
