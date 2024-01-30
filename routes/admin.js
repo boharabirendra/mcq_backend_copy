@@ -37,11 +37,6 @@ router.post("/signin", adminMiddleware, (req, res) => {
             username,
         }, process.env.JWT_SECRET)
 
-        const options = {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none"
-        }
         res.status(200)
             .json({
                 adminAccessToken,
