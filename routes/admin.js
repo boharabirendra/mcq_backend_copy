@@ -49,11 +49,17 @@ router.post("/signin", adminMiddleware, (req, res) => {
 })
 
 router.get("/users/all", doesAdminSignedIn, async (req, res) => {
-    const users = await User.find({}).select("-username -password").sort({ "fullName": 1 })
+    const page = req.query.page || 1
+    const pageSize = req.query.pageSize || 10
+    const startIndex = (page - 1) * pageSize
+    const endIndex = page * pageSize
+    const users = await User.find({}).skip(startIndex).limit(pageSize).select("-username -password").sort({ "fullName": 1 })
+    const totalItems = await User.countDocuments()
     if (users.length >= 1) {
         res.status(200)
             .json({
                 users,
+                totalPages: Math.ceil(totalItems / pageSize)
             })
     } else {
         res.status(403)
