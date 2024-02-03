@@ -22,7 +22,9 @@ function doesAdminSignedIn(req, res, next) {
     try {
         const accessToken = req.headers.authorization.split(" ")[1]
         if (!accessToken) {
-            return res.redirect("/admin")
+            return res.status(401).json({
+                message: "Unauthorized access"
+            })
         }
         const decoded = jwt.verify(accessToken, process.env.JWT_SECRET)
         next()

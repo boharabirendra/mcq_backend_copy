@@ -29,8 +29,6 @@ app.use("/questions", questionRouter)
 
 
 
-
-
 dbConnection()
     .then(function () {
         app.listen(process.env.PORT, () => {
